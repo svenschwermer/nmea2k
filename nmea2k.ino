@@ -157,8 +157,8 @@ void HandleUltrasonicSensor()
   tN2kMsg N2kMsg;
   switch (ultrasonic.read(reading)) {
   case DS1603L::state::new_data:
-    Serial.printf("New ultrasonic sensor reading: %f\n", reading);
-    percentage = static_cast<double>(reading) / std::numeric_limits<uint16_t>::max(); // TODO: requires calibration
+    percentage = 100 * static_cast<double>(reading) / std::numeric_limits<uint16_t>::max(); // TODO: requires calibration
+    Serial.printf("New ultrasonic sensor reading: 0x%04x (%f%%)\n", reading, percentage);
     SetN2kFluidLevel(N2kMsg, 0, N2kft_Fuel, percentage, 400); // TODO: the 400l is just a guess
     NMEA2000.SendMsg(N2kMsg);
     break;

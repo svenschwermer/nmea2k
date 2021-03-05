@@ -1,3 +1,4 @@
 *.zip
 test_ds1603l
 *.o
+venv/
