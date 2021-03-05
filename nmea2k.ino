@@ -48,10 +48,7 @@ void setup()
 
   // Init BME280 I2C address depends on sensor 0x76 or 0x77.
   if (!bme.begin(0x76))
-  {
     Serial.println("Could not find a valid BME280 sensor, check wiring!");
-    while (1);
-  }
 
   ultrasonicSerial.begin(9600);
 
@@ -95,8 +92,16 @@ void setup()
 
 //*****************************************************************************
 
+bool bme280_present(void)
+{
+  return bme.sensorID() == 0x60;
+}
+
 void SendN2kTemperature(void)
 {
+  if (!bme280_present())
+    return;
+
   double temperature = bme.readTemperature();
   Serial.printf("Temperature: %3.1f°C\n", temperature);
 
@@ -107,6 +112,9 @@ void SendN2kTemperature(void)
 
 void SendN2kHumidity(void)
 {
+  if (!bme280_present())
+    return;
+
   double humidity = bme.readHumidity();
   Serial.printf("Humidity: %3.1f%%\n", humidity);
 
@@ -117,6 +125,9 @@ void SendN2kHumidity(void)
 
 void SendN2kPressure(void)
 {
+  if (!bme280_present())
+    return;
+
   double pressure = bme.readPressure() / 100; // Read and convert to mBar
   Serial.printf("Pressure: %3.1f mBar\n", pressure);
 

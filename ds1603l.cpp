@@ -10,7 +10,7 @@ DS1603L::state DS1603L::read(uint16_t &reading)
         uint8_t byte = serial.read();
         buffer = (buffer << 8) | byte;
 
-        if (buffer & 0xff000000 == 0xff000000)
+        if ((buffer & 0xff000000) == 0xff000000)
         {
             uint8_t checksum = 0xff;
             checksum += (buffer >> 16) & 0xff;
@@ -24,6 +24,9 @@ DS1603L::state DS1603L::read(uint16_t &reading)
         }
     }
     if (old_time == last_data_time && millis() - last_data_time > 10000)
+    {
+        last_data_time = millis();
         return state::no_input;
+    }
     return state::no_new_data;    
 }
