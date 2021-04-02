@@ -17,15 +17,13 @@
 #include <Adafruit_BME280.h>
 
 // DS1603L
-#include <SoftwareSerial.h>
 #include "ds1603l.h"
 
 //*****************************************************************************
 
 Adafruit_BME280 bme; // I2C: SCL=GPIO22 SDA=GPIO21
 
-SoftwareSerial ultrasonicSerial(GPIO_NUM_17); // Ultrasonic Sensor Soft UART: RX=GPIO17(seen from MCU)
-DS1603L ultrasonic(ultrasonicSerial);
+DS1603L ultrasonic(Serial2);
 
 int NodeAddress;         // To store last Node Address
 Preferences preferences; // Nonvolatile storage on ESP32 - To store LastDeviceAddress
@@ -50,7 +48,7 @@ void setup()
   if (!bme.begin(0x76))
     Serial.println("Could not find a valid BME280 sensor, check wiring!");
 
-  ultrasonicSerial.begin(9600);
+  Serial2.begin(9600);
 
   // Reserve enough buffer for sending all messages.
   NMEA2000.SetN2kCANMsgBufSize(16);
