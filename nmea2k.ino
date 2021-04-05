@@ -30,6 +30,8 @@
 Adafruit_BME280 bme; // I2C: SCL=GPIO22 SDA=GPIO21
 
 DS1603L ultrasonic(Serial2);
+static const uint16_t tank_min = 100, tank_max = 280; // in millimeters
+static const double tank_capacity = 200.0; // in liters
 
 OneWire one_wire(15); // GPIO15
 DallasTemperature ds18b20(&one_wire);
@@ -204,9 +206,10 @@ void HandleUltrasonicSensor()
   tN2kMsg N2kMsg;
   switch (ultrasonic.read(reading)) {
   case DS1603L::state::new_data:
-    percentage = 100 * static_cast<double>(reading) / std::numeric_limits<uint16_t>::max(); // TODO: requires calibration
-    Serial.printf("New ultrasonic sensor reading: 0x%04x (%f%%)\n", reading, percentage);
-    SetN2kFluidLevel(N2kMsg, 0, N2kft_Fuel, percentage, 400); // TODO: the 400l is just a guess
+    reading = std::max(std::min(reading, tank_max), tank_min) - tank_min;
+    percentage = 100 * static_cast<double>(reading) / static_cast<double>(tank_max - tank_min);
+    Serial.printf("New ultrasonic sensor reading: %dmm (%f%%)\n", reading, percentage);
+    SetN2kFluidLevel(N2kMsg, 0, N2kft_Fuel, percentage, tank_capacity);
     NMEA2000.SendMsg(N2kMsg);
     break;
   case DS1603L::state::checksum_fail:
