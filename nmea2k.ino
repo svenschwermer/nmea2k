@@ -52,6 +52,7 @@ const unsigned long TransmitMessages[] PROGMEM = {
   130314UL, // Pressure
   127505UL, // Fluid level
   0};
+static const uint8_t sid_no_position_fix = 0xff;
 
 //*****************************************************************************
 
@@ -137,7 +138,7 @@ void SendN2kTemperature(void)
   Serial.printf("Temperature: %3.1f°C\n", temperature);
 
   tN2kMsg N2kMsg;
-  SetN2kTemperature(N2kMsg, 0, 0, N2kts_InsideTemperature, CToKelvin(temperature));
+  SetN2kTemperature(N2kMsg, sid_no_position_fix, 0, N2kts_InsideTemperature, CToKelvin(temperature));
   NMEA2000.SendMsg(N2kMsg);
 }
 
@@ -150,7 +151,7 @@ void SendN2kHumidity(void)
   Serial.printf("Humidity: %3.1f%%\n", humidity);
 
   tN2kMsg N2kMsg;
-  SetN2kHumidity(N2kMsg, 0, 0, N2khs_InsideHumidity, humidity, N2kDoubleNA);
+  SetN2kHumidity(N2kMsg, sid_no_position_fix, 0, N2khs_InsideHumidity, humidity, N2kDoubleNA);
   NMEA2000.SendMsg(N2kMsg);
 }
 
@@ -163,7 +164,7 @@ void SendN2kPressure(void)
   Serial.printf("Pressure: %3.1f mBar\n", pressure);
 
   tN2kMsg N2kMsg;
-  SetN2kPressure(N2kMsg, 0, 0, N2kps_Atmospheric, mBarToPascal(pressure));
+  SetN2kPressure(N2kMsg, sid_no_position_fix, 0, N2kps_Atmospheric, mBarToPascal(pressure));
   NMEA2000.SendMsg(N2kMsg);
 }
 
@@ -179,7 +180,7 @@ void HandleDS18B20(void)
       Serial.printf("Temperature (DS18B20 #%d): %3.1f°C\n", i, tempC);
 
       tN2kMsg N2kMsg;
-      SetN2kTemperature(N2kMsg, 0, 0, ds18b20_src[i], CToKelvin(tempC));
+      SetN2kTemperature(N2kMsg, sid_no_position_fix, 1+i, ds18b20_src[i], CToKelvin(tempC));
       NMEA2000.SendMsg(N2kMsg);
     }
   }
